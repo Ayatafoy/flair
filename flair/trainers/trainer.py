@@ -111,10 +111,10 @@ class ModelTrainer:
                 )
 
             weight_extractor = WeightExtractor(base_path)
-
+        print('Create optimizer')
         optimizer = self.optimizer(self.model.parameters(), lr=learning_rate, **kwargs)
-
-        model, optimizer = amp.initialize(self.model, optimizer, opt_level='O3')
+        print('End create optimizer')
+        self.model, optimizer = amp.initialize(self.model, optimizer, opt_level='O3')
 
         if self.optimizer_state is not None:
             optimizer.load_state_dict(self.optimizer_state)
