@@ -114,7 +114,7 @@ class ModelTrainer:
 
         optimizer = self.optimizer(self.model.parameters(), lr=learning_rate, **kwargs)
 
-        model, optimizer = amp.initialize(self.model, optimizer)
+        model, optimizer = amp.initialize(self.model, optimizer, opt_level='O3')
 
         if self.optimizer_state is not None:
             optimizer.load_state_dict(self.optimizer_state)
