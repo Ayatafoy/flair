@@ -353,6 +353,9 @@ class Sentence:
                 # add each word in tokenized string as Token object to Sentence
                 word = ""
                 index = -1
+                print('len text: {}'.format(len(text)))
+                print('type text: {}'.format(type(text)))
+                print('text: {}'.format(text))
                 for index, char in enumerate(text):
                     if char == " ":
                         if len(word) > 0:
@@ -361,8 +364,8 @@ class Sentence:
 
                         word = ""
                     else:
-                        print(type(char))
-                        print(char)
+                        print('type char: {}'.format(type(char)))
+                        print('char: {}'.format(char))
                         word += char
                 # increment for last token in sentence if not followed by whtespace
                 index += 1
