@@ -310,11 +310,8 @@ class Sentence:
             self.add_labels(labels)
 
         self._embeddings: Dict = {}
-        print(text)
         # if text is passed, instantiate sentence with tokens (words)
         if text is not None:
-
-            print(use_tokenizer)
             # tokenize the text first if option selected
             if use_tokenizer:
 

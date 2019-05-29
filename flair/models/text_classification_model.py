@@ -99,6 +99,7 @@ class TextClassifier(flair.nn.Model):
         return model
 
     def forward_loss(self, sentences: Union[List[Sentence], Sentence]) -> torch.tensor:
+        print(sentences.shape)
         scores = self.forward(sentences)
         return self._calculate_loss(scores, sentences)
 
