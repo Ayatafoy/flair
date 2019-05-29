@@ -353,7 +353,7 @@ class Sentence:
                 # add each word in tokenized string as Token object to Sentence
                 word = ""
                 index = -1
-                print('len text: {}'.format(len(text)))
+                # print('len text: {}'.format(len(text)))
                 print('type text: {}'.format(type(text)))
                 print('text: {}'.format(text))
                 for index, char in enumerate(text):
