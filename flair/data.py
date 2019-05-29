@@ -356,6 +356,7 @@ class Sentence:
                 word = ""
                 index = -1
                 print(len(text))
+                print(type(text))
                 print(text)
                 for index, char in enumerate(text):
                     if char == " ":
