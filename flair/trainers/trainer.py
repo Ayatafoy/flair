@@ -5,6 +5,9 @@ import datetime
 import random
 import logging
 
+from apex import amp
+amp_handle = amp.init()
+
 from torch.optim.sgd import SGD
 from torch.utils.data.dataset import ConcatDataset
 
@@ -110,6 +113,9 @@ class ModelTrainer:
             weight_extractor = WeightExtractor(base_path)
 
         optimizer = self.optimizer(self.model.parameters(), lr=learning_rate, **kwargs)
+
+        model, optimizer = amp.initialize(self.model, optimizer)
+
         if self.optimizer_state is not None:
             optimizer.load_state_dict(self.optimizer_state)
 
@@ -197,12 +203,13 @@ class ModelTrainer:
                     loss = self.model.forward_loss(batch)
 
                     optimizer.zero_grad()
-                    loss.backward()
+                    with amp.scale_loss(loss, optimizer) as scaled_loss:
+                        scaled_loss.backward()
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
                     optimizer.step()
 
                     seen_batches += 1
-                    train_loss += loss.item()
+                    train_loss += scaled_loss.item()
 
                     clear_embeddings(
                         batch, also_clear_word_embeddings=not embeddings_in_memory
@@ -426,13 +433,14 @@ class ModelTrainer:
             loss = self.model.forward_loss(batch)
 
             optimizer.zero_grad()
-            loss.backward()
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5.0)
             optimizer.step()
             scheduler.step()
             learning_rate = scheduler.get_lr()[0]
 
-            loss_item = loss.item()
+            loss_item = scaled_loss.item()
             if itr == 0:
                 best_loss = loss_item
             else:
@@ -443,9 +451,9 @@ class ModelTrainer:
                     )
                     loss_item = moving_avg_loss / (1 - smoothing_factor ** (itr + 1))
                 if loss_item < best_loss:
-                    best_loss = loss
+                    best_loss = scaled_loss
 
-            if stop_early and (loss_item > 4 * best_loss or torch.isnan(loss)):
+            if stop_early and (loss_item > 4 * best_loss or torch.isnan(scaled_loss)):
                 log_line(log)
                 log.info("loss diverged - stopping early!")
                 break
