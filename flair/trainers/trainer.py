@@ -65,7 +65,6 @@ class ModelTrainer:
         num_workers: int = 8,
         **kwargs,
     ) -> dict:
-
         if eval_mini_batch_size is None:
             eval_mini_batch_size = mini_batch_size
 
